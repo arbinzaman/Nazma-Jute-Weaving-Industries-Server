@@ -16,6 +16,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const userCollection = client.db('NazmaJute').collection('usersList');
+        const productCollection = client.db('NazmaJute').collection('products');
        
 
 
@@ -77,6 +78,44 @@ async function run() {
             res.send(result);
         });
 
+        // AddAProduct
+
+
+        app.post("/products", async (req, res) => {
+            const items = req.body;
+            console.log(items);
+            const result = await productCollection.insertOne(items);
+            res.send(result);
+        });
+
+        app.get("/products", async (req, res) => {
+            const query = {};
+            const cursor = await productCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+        app.delete("/products/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productCollection.deleteOne(query);
+            console.log(result);
+            res.send(result);
+        });
+
+
+        // app.put("/products/admin/:id", async (req, res) => {
+        //     const id = req.params.id;
+        //     const filter = { _id: ObjectId(id) }
+        //     const option = { upsert: true };
+        //     const updateDoc = {
+        //         $set: {
+        //             description: 'admin'
+        //         }
+        //     }
+        //     const result = await userCollection.updateOne(filter, updateDoc, option);
+        //     console.log(result);
+        //     res.send(result);
+        // });
 
     }
     finally {
